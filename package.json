@@ -1,0 +1,120 @@
+{
+  "name": "github-webhook-manager",
+  "displayName": "GitHub Webhook Manager",
+  "description": "View and redeliver GitHub repository webhook deliveries without leaving VS Code",
+  "version": "0.0.1",
+  "publisher": "seiya-koji",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seiya-koji/github-webhook-manager.git"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "license": "MIT",
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "github",
+    "webhook",
+    "redeliver",
+    "deliveries"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "githubWebhooks",
+          "title": "GitHub Webhooks",
+          "icon": "resources/webhook.svg"
+        }
+      ]
+    },
+    "views": {
+      "githubWebhooks": [
+        {
+          "id": "githubWebhooks.deliveries",
+          "name": "Webhooks",
+          "icon": "resources/webhook.svg",
+          "contextualTitle": "GitHub Webhooks"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "githubWebhooks.refresh",
+        "title": "Refresh",
+        "category": "GitHub Webhooks",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "githubWebhooks.showDelivery",
+        "title": "Show Delivery Details",
+        "category": "GitHub Webhooks",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "githubWebhooks.redeliver",
+        "title": "Redeliver",
+        "category": "GitHub Webhooks",
+        "icon": "$(history)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "githubWebhooks.refresh",
+          "when": "view == githubWebhooks.deliveries",
+          "group": "navigation@1"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "githubWebhooks.redeliver",
+          "when": "view == githubWebhooks.deliveries && viewItem == delivery",
+          "group": "inline"
+        },
+        {
+          "command": "githubWebhooks.showDelivery",
+          "when": "view == githubWebhooks.deliveries && viewItem == delivery",
+          "group": "1_actions"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run check-types && node esbuild.js --production",
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "check-types": "tsc --noEmit",
+    "package": "vsce package --no-dependencies",
+    "prepare": "husky",
+    "test": "vitest run",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.1.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^20",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.25.0",
+    "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "prettier": "^3.8.4",
+    "typescript": "^5.3",
+    "typescript-eslint": "^8.61.1",
+    "vitest": "^4.1.9"
+  }
+}
