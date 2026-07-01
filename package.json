@@ -2,7 +2,7 @@
   "name": "github-webhook-manager",
   "displayName": "GitHub Webhook Manager",
   "description": "View and redeliver GitHub repository webhook deliveries without leaving VS Code",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "seiya-koji",
   "repository": {
     "type": "git",
