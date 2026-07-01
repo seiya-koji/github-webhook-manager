@@ -140,7 +140,7 @@ describe('activate', () => {
     await flush();
 
     const options = vi.mocked(vscode.window.createTreeView).mock.calls[0][1];
-    const provider = options.treeDataProvider as { getChildren(): Promise<unknown[]> };
+    const provider = options.treeDataProvider as unknown as { getChildren(): Promise<unknown[]> };
     const roots = await provider.getChildren();
 
     expect(roots).toHaveLength(1);
