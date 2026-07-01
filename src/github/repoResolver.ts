@@ -10,6 +10,16 @@ export interface RepoRef {
 export const GITHUB_COM = 'github.com';
 
 /**
+ * Build the browser URL for a repository's webhook settings page.
+ * With a hookId, points at that single webhook; without it, the hooks list.
+ * Works for github.com and GitHub Enterprise Server (the host is taken from repo).
+ */
+export function webhookSettingsUrl(repo: RepoRef, hookId?: number): string {
+  const base = `https://${repo.host}/${repo.owner}/${repo.repo}/settings/hooks`;
+  return hookId === undefined ? base : `${base}/${hookId}`;
+}
+
+/**
  * Parse a git remote URL (https, ssh://, or scp-style) into a RepoRef.
  * The host is extracted from the URL and included in the result, so both
  * github.com and GitHub Enterprise Server URLs are supported.

@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as vscode from 'vscode';
 import { activate, deactivate } from '../src/extension';
-import { DeliveryNode, MessageNode } from '../src/tree/nodes';
-import type { DeliverySummary } from '../src/github/webhookClient';
+import { DeliveryNode, MessageNode, WebhookNode } from '../src/tree/nodes';
+import type { DeliverySummary, Webhook } from '../src/github/webhookClient';
 
 const repos = vi.hoisted(() => ({
   listWebhooks: vi.fn(),
@@ -27,6 +27,8 @@ const COMMANDS = [
   'githubWebhooks.refresh',
   'githubWebhooks.showDelivery',
   'githubWebhooks.redeliver',
+  'githubWebhooks.openWebhookSettings',
+  'githubWebhooks.openRepoWebhooks',
 ];
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -66,6 +68,14 @@ const deliveryNode = new DeliveryNode(7, {
   delivered_at: 'x',
   duration: 1,
 } as unknown as DeliverySummary);
+
+const webhookNode = new WebhookNode({
+  id: 42,
+  name: 'web',
+  active: true,
+  events: ['push'],
+  config: {},
+} as unknown as Webhook);
 
 describe('activate', () => {
   beforeEach(() => {
@@ -135,6 +145,43 @@ describe('activate', () => {
 
     expect(roots).toHaveLength(1);
     expect(roots[0]).toBeInstanceOf(MessageNode);
+  });
+
+  it('opens the repository webhooks page in the browser', async () => {
+    activate(makeContext());
+    await flush();
+
+    await handlerFor('githubWebhooks.openRepoWebhooks')();
+
+    expect(vscode.Uri.parse).toHaveBeenCalledWith(
+      'https://github.com/seiya-koji/demo/settings/hooks'
+    );
+    expect(vscode.env.openExternal).toHaveBeenCalled();
+  });
+
+  it('opens a single webhook settings page in the browser', async () => {
+    activate(makeContext());
+    await flush();
+
+    await handlerFor('githubWebhooks.openWebhookSettings')(webhookNode);
+
+    expect(vscode.Uri.parse).toHaveBeenCalledWith(
+      'https://github.com/seiya-koji/demo/settings/hooks/42'
+    );
+    expect(vscode.env.openExternal).toHaveBeenCalled();
+  });
+
+  it('warns instead of opening when no repository is detected', async () => {
+    execFile.mockImplementation((_c: string, _a: string[], _o: unknown, cb: ExecCb) =>
+      cb(new Error('not a git repository'), '')
+    );
+    activate(makeContext());
+    await flush();
+
+    await handlerFor('githubWebhooks.openRepoWebhooks')();
+
+    expect(vscode.env.openExternal).not.toHaveBeenCalled();
+    expect(vscode.window.showWarningMessage).toHaveBeenCalled();
   });
 
   it('deactivate runs without throwing', () => {
