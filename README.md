@@ -14,6 +14,7 @@ A VS Code extension that lets you **review webhook delivery history (Recent Deli
 - 📜 Each delivery shows its **event name, status code, delivery status, and whether it was a redelivery** at a glance.
 - 🔎 Click a delivery to see its full **request / response details** rendered in a formatted Webview panel.
 - 🔁 Right-click a delivery → **Redeliver** for one-click redelivery (with a confirmation dialog).
+- 🌐 Jump to GitHub when you need the full browser UI — open a **webhook's settings page** from its context menu, or the repository's **Webhooks list** from the view's title bar.
 - 🏢 Works with **github.com and GitHub Enterprise Server** — the host is resolved from your git remote automatically.
 - 🔐 Authentication uses VS Code's built-in GitHub sign-in — no manual personal access token management required.
 
@@ -36,6 +37,7 @@ Install it from the Visual Studio Code Marketplace.
 3. The target repository is auto-detected from your workspace's git remote (`upstream` is preferred over `origin`). A GitHub remote is required — if none is found, the view shows a short notice instead of webhooks.
 4. Expand a **host → webhook → branch** to browse its delivery history.
 5. Click a delivery to open its details. To redeliver, right-click the delivery → choose **Redeliver**, and it will be resent after confirmation.
+6. Need the full GitHub UI? Click the **GitHub icon** in the view's title bar to open the repository's Webhooks page, or right-click a **webhook** → **Open Webhook Settings on GitHub** to jump straight to that hook's settings.
 
 > [!NOTE]
 > Due to GitHub's specifications, only deliveries from the **last 3 days** can be redelivered.
