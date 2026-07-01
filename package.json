@@ -62,6 +62,18 @@
         "title": "Redeliver",
         "category": "GitHub Webhooks",
         "icon": "$(history)"
+      },
+      {
+        "command": "githubWebhooks.openWebhookSettings",
+        "title": "Open Webhook Settings on GitHub",
+        "category": "GitHub Webhooks",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "githubWebhooks.openRepoWebhooks",
+        "title": "Open Repository Webhooks Page on GitHub",
+        "category": "GitHub Webhooks",
+        "icon": "$(github-inverted)"
       }
     ],
     "menus": {
@@ -70,6 +82,11 @@
           "command": "githubWebhooks.refresh",
           "when": "view == githubWebhooks.deliveries",
           "group": "navigation@1"
+        },
+        {
+          "command": "githubWebhooks.openRepoWebhooks",
+          "when": "view == githubWebhooks.deliveries",
+          "group": "navigation@2"
         }
       ],
       "view/item/context": [
@@ -82,6 +99,17 @@
           "command": "githubWebhooks.showDelivery",
           "when": "view == githubWebhooks.deliveries && viewItem == delivery",
           "group": "1_actions"
+        },
+        {
+          "command": "githubWebhooks.openWebhookSettings",
+          "when": "view == githubWebhooks.deliveries && viewItem == webhook",
+          "group": "inline"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "githubWebhooks.openWebhookSettings",
+          "when": "false"
         }
       ]
     }

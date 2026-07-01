@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import * as vscode from 'vscode';
-import { parseGitHubRemote, resolveRepo } from '../../src/github/repoResolver';
+import { parseGitHubRemote, resolveRepo, webhookSettingsUrl } from '../../src/github/repoResolver';
 
 const execFile = vi.hoisted(() => vi.fn());
 vi.mock('node:child_process', () => ({ execFile }));
@@ -131,5 +131,23 @@ describe('resolveRepo', () => {
     setFolders([]);
     expect(await resolveRepo()).toBeUndefined();
     expect(execFile).not.toHaveBeenCalled();
+  });
+});
+
+describe('webhookSettingsUrl', () => {
+  const repo = { host: 'github.com', owner: 'owner', repo: 'repo' };
+
+  it('builds the single-webhook settings URL when a hookId is given', () => {
+    expect(webhookSettingsUrl(repo, 123)).toBe('https://github.com/owner/repo/settings/hooks/123');
+  });
+
+  it('builds the hooks-list URL when no hookId is given', () => {
+    expect(webhookSettingsUrl(repo)).toBe('https://github.com/owner/repo/settings/hooks');
+  });
+
+  it('uses the host from the repo for GitHub Enterprise Server', () => {
+    expect(webhookSettingsUrl({ host: 'github.example.com', owner: 'org', repo: 'app' }, 7)).toBe(
+      'https://github.example.com/org/app/settings/hooks/7'
+    );
   });
 });

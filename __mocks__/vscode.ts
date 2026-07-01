@@ -110,3 +110,7 @@ export const Uri = {
   file: vi.fn((path: string) => ({ fsPath: path })),
   parse: vi.fn((value: string) => ({ toString: () => value })),
 };
+
+export const env = {
+  openExternal: vi.fn(() => Promise.resolve(true)),
+};

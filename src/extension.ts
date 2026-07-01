@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 import { getOctokit } from './auth';
-import { resolveRepo, type RepoRef } from './github/repoResolver';
+import { resolveRepo, webhookSettingsUrl, type RepoRef } from './github/repoResolver';
 import { WebhookClient } from './github/webhookClient';
 import { WebhookTreeProvider } from './tree/webhookTreeProvider';
-import { DeliveryNode } from './tree/nodes';
+import { DeliveryNode, WebhookNode } from './tree/nodes';
 import { DeliveryPanel } from './panel/deliveryPanel';
 import { toMessage } from './errors';
 
@@ -81,6 +81,25 @@ export function activate(context: vscode.ExtensionContext): void {
     }
   }
 
+  async function openWebhookSettings(node: WebhookNode): Promise<void> {
+    if (!currentRepo || !node?.webhook) {
+      return;
+    }
+    await vscode.env.openExternal(
+      vscode.Uri.parse(webhookSettingsUrl(currentRepo, node.webhook.id))
+    );
+  }
+
+  async function openRepoWebhooks(): Promise<void> {
+    if (!currentRepo) {
+      void vscode.window.showWarningMessage(
+        'GitHub Webhook Manager: No GitHub repository detected in this workspace.'
+      );
+      return;
+    }
+    await vscode.env.openExternal(vscode.Uri.parse(webhookSettingsUrl(currentRepo)));
+  }
+
   context.subscriptions.push(
     vscode.commands.registerCommand('githubWebhooks.refresh', () => provider.refresh()),
     vscode.commands.registerCommand('githubWebhooks.showDelivery', (node: DeliveryNode) =>
@@ -88,7 +107,11 @@ export function activate(context: vscode.ExtensionContext): void {
     ),
     vscode.commands.registerCommand('githubWebhooks.redeliver', (node: DeliveryNode) =>
       redeliver(node)
-    )
+    ),
+    vscode.commands.registerCommand('githubWebhooks.openWebhookSettings', (node: WebhookNode) =>
+      openWebhookSettings(node)
+    ),
+    vscode.commands.registerCommand('githubWebhooks.openRepoWebhooks', () => openRepoWebhooks())
   );
 
   void load();
