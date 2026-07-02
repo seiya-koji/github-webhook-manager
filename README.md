@@ -3,6 +3,7 @@
 [![VS Marketplace Version](https://badgen.net/vs-marketplace/v/seiya-koji.github-webhook-manager?label=version)](https://marketplace.visualstudio.com/items?itemName=seiya-koji.github-webhook-manager)
 [![VS Marketplace Installs](https://badgen.net/vs-marketplace/i/seiya-koji.github-webhook-manager?label=installs)](https://marketplace.visualstudio.com/items?itemName=seiya-koji.github-webhook-manager)
 [![VS Marketplace Rating](https://badgen.net/vs-marketplace/rating/seiya-koji.github-webhook-manager?label=rating)](https://marketplace.visualstudio.com/items?itemName=seiya-koji.github-webhook-manager)
+[![Open VSX Version](https://img.shields.io/open-vsx/v/seiya-koji/github-webhook-manager?label=open%20vsx)](https://open-vsx.org/extension/seiya-koji/github-webhook-manager)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A VS Code extension that lets you **review webhook delivery history (Recent Deliveries)** and **redeliver** them for your GitHub repositories — all without leaving VS Code for the GitHub settings page in your browser.
