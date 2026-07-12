@@ -184,6 +184,113 @@ describe('activate', () => {
     expect(vscode.window.showWarningMessage).toHaveBeenCalled();
   });
 
+  it('shows delivery details in a webview panel', async () => {
+    repos.getWebhookDelivery.mockResolvedValue({
+      data: {
+        id: 10,
+        guid: 'g',
+        event: 'push',
+        action: null,
+        status: 'OK',
+        status_code: 200,
+        duration: 5,
+        redelivery: false,
+        delivered_at: 'x',
+        request: { headers: null, payload: null },
+        response: { headers: null, payload: null },
+      },
+    });
+    activate(makeContext());
+    await flush();
+
+    await handlerFor('githubWebhooks.showDelivery')(deliveryNode);
+
+    expect(repos.getWebhookDelivery).toHaveBeenCalledWith({
+      owner: 'seiya-koji',
+      repo: 'demo',
+      hook_id: 7,
+      delivery_id: 10,
+    });
+    expect(vscode.window.createWebviewPanel).toHaveBeenCalled();
+  });
+
+  it('surfaces an error when loading delivery details fails', async () => {
+    repos.getWebhookDelivery.mockRejectedValue(new Error('nope'));
+    activate(makeContext());
+    await flush();
+
+    await handlerFor('githubWebhooks.showDelivery')(deliveryNode);
+
+    expect(vscode.window.showErrorMessage).toHaveBeenCalled();
+  });
+
+  it('ignores showDelivery when no client is active', async () => {
+    execFile.mockImplementation((_c: string, _a: string[], _o: unknown, cb: ExecCb) =>
+      cb(new Error('not a git repository'), '')
+    );
+    activate(makeContext());
+    await flush();
+
+    await handlerFor('githubWebhooks.showDelivery')(deliveryNode);
+
+    expect(repos.getWebhookDelivery).not.toHaveBeenCalled();
+  });
+
+  it('ignores redeliver when no client is active', async () => {
+    execFile.mockImplementation((_c: string, _a: string[], _o: unknown, cb: ExecCb) =>
+      cb(new Error('not a git repository'), '')
+    );
+    activate(makeContext());
+    await flush();
+
+    await handlerFor('githubWebhooks.redeliver')(deliveryNode);
+
+    expect(vscode.window.showWarningMessage).not.toHaveBeenCalled();
+  });
+
+  it('surfaces an error when redelivery fails', async () => {
+    vi.mocked(vscode.window.showWarningMessage).mockResolvedValue(
+      'Redeliver' as unknown as vscode.MessageItem
+    );
+    repos.redeliverWebhookDelivery.mockRejectedValue(new Error('boom'));
+    activate(makeContext());
+    await flush();
+
+    await handlerFor('githubWebhooks.redeliver')(deliveryNode);
+
+    expect(vscode.window.showErrorMessage).toHaveBeenCalled();
+  });
+
+  it('ignores openWebhookSettings when the node carries no webhook', async () => {
+    activate(makeContext());
+    await flush();
+
+    await handlerFor('githubWebhooks.openWebhookSettings')({} as unknown as WebhookNode);
+
+    expect(vscode.env.openExternal).not.toHaveBeenCalled();
+  });
+
+  it('surfaces an error when authentication fails during load', async () => {
+    vi.mocked(vscode.authentication.getSession).mockRejectedValue(new Error('auth denied'));
+    activate(makeContext());
+    await flush();
+    await flush();
+
+    expect(vscode.window.showErrorMessage).toHaveBeenCalled();
+  });
+
+  it('refreshes the tree when the refresh command runs', async () => {
+    activate(makeContext());
+    await flush();
+    const options = vi.mocked(vscode.window.createTreeView).mock.calls[0][1];
+    const provider = options.treeDataProvider as unknown as { refresh: () => void };
+    const spy = vi.spyOn(provider, 'refresh');
+
+    await handlerFor('githubWebhooks.refresh')();
+
+    expect(spy).toHaveBeenCalled();
+  });
+
   it('deactivate runs without throwing', () => {
     expect(() => deactivate()).not.toThrow();
   });

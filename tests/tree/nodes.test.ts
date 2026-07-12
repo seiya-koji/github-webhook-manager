@@ -73,6 +73,18 @@ describe('DeliveryNode', () => {
     expect(node.description).toContain('main');
     expect(node.tooltip).toContain('Branch: main');
   });
+
+  it('uses the error icon for a failed status and includes the action in the tooltip', () => {
+    const node = new DeliveryNode(7, {
+      ...delivery,
+      status_code: 500,
+      status: 'Internal Server Error',
+      action: 'opened',
+    });
+    expect((node.iconPath as { id: string }).id).toBe('error');
+    expect((node.iconPath as { color: { id: string } }).color.id).toBe('testing.iconFailed');
+    expect(node.tooltip).toContain('push.opened');
+  });
 });
 
 describe('BranchNode', () => {

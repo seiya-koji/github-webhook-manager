@@ -123,11 +123,12 @@ export class WebhookTreeProvider implements vscode.TreeDataProvider<Node> {
       list.push(delivery);
       groups.set(branch, list);
     }
-    const keys = [...groups.keys()].sort((a, b) => {
-      if (a === NO_BRANCH_GROUP) return 1;
-      if (b === NO_BRANCH_GROUP) return -1;
-      return a.localeCompare(b);
-    });
-    return keys.map((branch) => new BranchNode(hookId, branch, groups.get(branch) ?? []));
+    return [...groups.entries()]
+      .sort(([a], [b]) => {
+        if (a === NO_BRANCH_GROUP) return 1;
+        if (b === NO_BRANCH_GROUP) return -1;
+        return a.localeCompare(b);
+      })
+      .map(([branch, deliveries]) => new BranchNode(hookId, branch, deliveries));
   }
 }
