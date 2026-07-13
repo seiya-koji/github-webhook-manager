@@ -1,5 +1,6 @@
 # GitHub Webhook Manager
 
+[![codecov](https://codecov.io/gh/seiya-koji/github-webhook-manager/graph/badge.svg)](https://codecov.io/gh/seiya-koji/github-webhook-manager)
 [![VS Marketplace Version](https://badgen.net/vs-marketplace/v/seiya-koji.github-webhook-manager?label=version)](https://marketplace.visualstudio.com/items?itemName=seiya-koji.github-webhook-manager)
 [![VS Marketplace Installs](https://badgen.net/vs-marketplace/i/seiya-koji.github-webhook-manager?label=installs)](https://marketplace.visualstudio.com/items?itemName=seiya-koji.github-webhook-manager)
 [![VS Marketplace Rating](https://badgen.net/vs-marketplace/rating/seiya-koji.github-webhook-manager?label=rating)](https://marketplace.visualstudio.com/items?itemName=seiya-koji.github-webhook-manager)

@@ -132,6 +132,18 @@ describe('resolveRepo', () => {
     expect(await resolveRepo()).toBeUndefined();
     expect(execFile).not.toHaveBeenCalled();
   });
+
+  it('returns undefined when workspaceFolders is undefined', async () => {
+    setFolders(undefined);
+    expect(await resolveRepo()).toBeUndefined();
+    expect(execFile).not.toHaveBeenCalled();
+  });
+
+  it('returns undefined when git succeeds but no remote parses to a GitHub repo', async () => {
+    setFolders(DEFAULT_FOLDERS);
+    gitReturns('origin\tsome-unparseable-remote (fetch)\n');
+    expect(await resolveRepo()).toBeUndefined();
+  });
 });
 
 describe('webhookSettingsUrl', () => {

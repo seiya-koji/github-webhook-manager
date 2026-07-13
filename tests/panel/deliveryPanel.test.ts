@@ -1,5 +1,11 @@
-import { describe, it, expect } from 'vitest';
-import { escapeHtml, formatPayload, renderHtml } from '../../src/panel/deliveryPanel';
+import { describe, it, expect, vi } from 'vitest';
+import * as vscode from 'vscode';
+import {
+  DeliveryPanel,
+  escapeHtml,
+  formatPayload,
+  renderHtml,
+} from '../../src/panel/deliveryPanel';
 import type { DeliveryDetail } from '../../src/github/webhookClient';
 
 describe('escapeHtml', () => {
@@ -66,5 +72,43 @@ describe('renderHtml', () => {
       })
     );
     expect(html).not.toContain('Branch:');
+  });
+
+  it('includes the action and redelivery flag in the metadata line', () => {
+    const html = renderHtml(detail({ action: 'opened', redelivery: true }));
+    expect(html).toContain('push.opened');
+    expect(html).toContain('redelivery');
+  });
+});
+
+describe('DeliveryPanel', () => {
+  it('creates a panel, reuses it on later shows, and recreates after disposal', () => {
+    let disposeCb: () => void = () => {};
+    const panel = {
+      title: '',
+      webview: { html: '' },
+      reveal: vi.fn(),
+      onDidDispose: vi.fn((cb: () => void) => {
+        disposeCb = cb;
+      }),
+      dispose: vi.fn(),
+    };
+    const create = vi.mocked(vscode.window.createWebviewPanel);
+    create.mockReturnValue(panel as unknown as ReturnType<typeof create>);
+    create.mockClear();
+
+    DeliveryPanel.show(detail({ id: 1 }));
+    expect(create).toHaveBeenCalledTimes(1);
+    expect(panel.title).toBe('Delivery #1');
+    expect(panel.webview.html).toContain('Webhook delivery #1');
+
+    DeliveryPanel.show(detail({ id: 2 }));
+    expect(create).toHaveBeenCalledTimes(1); // reused, not recreated
+    expect(panel.reveal).toHaveBeenCalledTimes(1);
+    expect(panel.webview.html).toContain('Webhook delivery #2');
+
+    disposeCb(); // clears the singleton
+    DeliveryPanel.show(detail({ id: 3 }));
+    expect(create).toHaveBeenCalledTimes(2);
   });
 });
